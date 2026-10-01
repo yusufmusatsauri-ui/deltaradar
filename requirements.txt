@@ -1,0 +1,9 @@
+# DeltaRadar Dependencies
+# Note: DeltaRadar's core engine is built to run on Python 3.10+ standard library
+# with optional asynchronous ecosystem enhancements:
+
+aiohttp>=3.9.0
+websockets>=12.0
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+google-genai>=0.1.0

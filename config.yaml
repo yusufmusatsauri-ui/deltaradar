@@ -1,0 +1,137 @@
+# DeltaRadar Configuration File
+# Editable without modifying application source code
+
+agent:
+  name: "DeltaRadar"
+  version: "1.0.0"
+  disclaimer: "⚠️ DeltaRadar alerts are strictly informational for market intelligence. NOT financial or trading advice. DeltaRadar never executes trades."
+  dry_run: false
+  log_level: "INFO"
+
+# Watchlists categorized by asset class with their designated reference benchmark
+watchlist:
+  altcoins:
+    reference_benchmark: "BTC/USDT"
+    symbols:
+      - "SOL/USDT"
+      - "ETH/USDT"
+      - "AVAX/USDT"
+      - "NEAR/USDT"
+      - "SUI/USDT"
+      - "LINK/USDT"
+      - "DOGE/USDT"
+      - "ARB/USDT"
+      - "OP/USDT"
+      - "TIA/USDT"
+      - "INJ/USDT"
+      - "RENDER/USDT"
+      - "APT/USDT"
+      - "KAS/USDT"
+
+  forex_gold:
+    symbols:
+      - symbol: "XAUUSD"
+        name: "Gold Spot"
+        reference_benchmark: "GLD"
+      - symbol: "EURUSD"
+        name: "Euro / US Dollar"
+        reference_benchmark: "DXY"
+      - symbol: "GBPUSD"
+        name: "British Pound / US Dollar"
+        reference_benchmark: "DXY"
+      - symbol: "USDJPY"
+        name: "US Dollar / Japanese Yen"
+        reference_benchmark: "DXY"
+
+  tokenized_stocks:
+    symbols:
+      - symbol: "TSLA/USD"
+        underlying: "TSLA"
+        exchange: "NASDAQ"
+      - symbol: "NVDA/USD"
+        underlying: "NVDA"
+        exchange: "NASDAQ"
+      - symbol: "AAPL/USD"
+        underlying: "AAPL"
+        exchange: "NASDAQ"
+      - symbol: "COIN/USD"
+        underlying: "COIN"
+        exchange: "NASDAQ"
+      - symbol: "MSFT/USD"
+        underlying: "MSFT"
+        exchange: "NASDAQ"
+
+# Detection Engine Thresholds
+thresholds:
+  volume_spike:
+    lookback_periods: 20
+    multiplier: 3.0      # Current volume must exceed 3.0x the 20-period moving average
+
+  breakout:
+    swing_lookback: 20   # Recent swing high/low lookback candles
+    min_penetration_pct: 0.2  # Minimum % break past level to filter noise
+
+  divergence:
+    tokenized_max_lag_lead_pct: 1.2    # Tokenized asset vs underlying stock/gold % deviation
+    altcoin_decoupling:
+      min_btc_move_pct: 1.5            # Significant BTC move required to measure decoupling
+      min_alt_divergence_pct: 2.5      # Alt moves opposite or decouples by >= 2.5%
+
+  news_sentiment:
+    sentiment_shift_threshold: 0.35    # Sentiment delta scale (-1.0 to +1.0)
+
+# Confidence Scoring (0 - 100)
+scoring:
+  min_alert_confidence: 60     # Minimum score required to publish an alert
+  weights:
+    volume_spike: 0.35
+    breakout: 0.30
+    divergence: 0.25
+    sentiment: 0.10
+  synergy_bonus:
+    two_triggers: 15
+    three_or_more: 25
+  penalties:
+    thin_liquidity: 15
+    wide_spread: 12            # Penalty applied when spread > spread_limit_bps
+    spread_limit_bps: 18       # 0.18%
+
+# Telegram Bot Settings
+telegram:
+  cooldown_minutes_per_asset: 30
+  quiet_hours:
+    enabled: false
+    start_utc: "23:00"
+    end_utc: "06:00"
+  enable_chart_links: true
+  chart_base_url: "https://www.tradingview.com/chart/?symbol="
+
+# Outcome Tracking (+1h, +4h, +24h hit/miss evaluation)
+outcome_tracking:
+  evaluation_windows: [1, 4, 24] # hours
+  targets:
+    1h:
+      min_move_pct: 1.2
+      max_adverse_pct: 1.0     # Stop/invalidation tolerance
+    4h:
+      min_move_pct: 2.5
+      max_adverse_pct: 1.8
+    24h:
+      min_move_pct: 4.5
+      max_adverse_pct: 3.0
+
+# Weekly Self-Calibration
+calibration:
+  target_hit_rate: 0.65       # 65% target hit rate
+  adjustment_step: 0.05       # Increment/decrement step
+  min_weight: 0.05
+  max_weight: 0.55
+  frequency_days: 7
+
+# Data Feeds & Adapters
+data_sources:
+  primary_crypto: "bitget"     # Options: bitget, binance, mock
+  primary_stocks_forex: "yahoo_finnhub" # Options: yahoo_finnhub, alpha_vantage, mock
+  news_feed: "cryptocompare_rss" # Options: cryptocompare_rss, binance_news, mock
+  fallback_polling_sec: 10
+  rate_limit_pause_sec: 2

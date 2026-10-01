@@ -1,0 +1,6 @@
+{
+  "name": "DeltaRadar - Market Anomaly & Divergence Detection Agent",
+  "description": "Alert-only market intelligence agent detecting anomalies and divergences across altcoins, forex, and tokenized stocks with LLM cause checks and self-calibration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
